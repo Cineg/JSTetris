@@ -13,23 +13,23 @@ changeTypeButton.addEventListener("click", function (e) {
 
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, 500, 800);
-	draw_canvas(puz);
+	drawCanvas(puz);
 });
 
 flipLeftButton.addEventListener("click", function (e) {
-	puz.flip_left();
+	puz.flipLeft();
 
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, 500, 800);
-	draw_canvas(puz);
+	drawCanvas(puz);
 });
 
 flipRightButton.addEventListener("click", function (e) {
-	puz.flip_right();
+	puz.flipRight();
 
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, 500, 800);
-	draw_canvas(puz);
+	drawCanvas(puz);
 });
 
 let _currentItem = 1;
@@ -41,27 +41,47 @@ let board = new Board(10, 30, canvas.offsetWidth);
 console.log(board);
 
 let puz = new Puzzle(4);
-puz.flip_left();
+puz.flipLeft();
 
 ctx.fillStyle = "black";
 ctx.fillRect(0, 0, 500, 800);
 
-draw_canvas(puz);
+drawCanvas(puz);
 
-function draw_canvas(puzzle) {
-	ctx.fillStyle = "white";
-	console.log(puzzle.shape);
+function getColor(num) {
+	switch (num) {
+		case 0:
+			return "black";
+		case 1:
+			return "white";
+		case 2:
+			return "yellow";
+		case 3:
+			return "red";
+		case 4:
+			return "blue";
+		case 5:
+			return "green";
+		case 6:
+			return "pink";
+		case 7:
+			return "grey";
+
+		default:
+			return "white";
+	}
+}
+
+function drawCanvas(puzzle) {
 	for (let row = 0; row < puzzle.shape.length; row++) {
-		console.log(puzzle.shape[0]);
 		for (let col = 0; col < puzzle.shape[0].length; col++) {
-			if (puzzle.shape[row][col] != 0) {
-				ctx.fillRect(
-					(col + 1) * board.canvas_square_size,
-					(row + 1) * board.canvas_square_size,
-					board.canvas_square_size,
-					board.canvas_square_size
-				);
-			}
+			ctx.fillStyle = getColor(puzzle.shape[row][col]);
+			ctx.fillRect(
+				(col + 1) * board.canvas_square_size,
+				(row + 1) * board.canvas_square_size,
+				board.canvas_square_size,
+				board.canvas_square_size
+			);
 		}
 	}
 }
