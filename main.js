@@ -7,6 +7,13 @@ const flipRightButton = document.getElementById("test_flip_right");
 const moveLeftButton = document.getElementById("test_move_left");
 const moveRightButton = document.getElementById("test_move_right");
 
+document
+	.getElementById("startGameLoop")
+	.addEventListener("click", startGameLoop);
+document.getElementById("stopGameLoop").addEventListener("click", stopGameLoop);
+
+let intervalId;
+
 moveLeftButton.addEventListener("click", function (e) {
 	puz.position[1] -= 1;
 	if (puz.position[1] < 0) puz.position[1] = 0;
@@ -57,7 +64,7 @@ let _currentItem = 1;
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let board = new Board(10, 30, canvas.offsetWidth);
+let board = new Board(15, 30, canvas.offsetWidth);
 console.log(board);
 
 let puz = new Puzzle(4);
@@ -92,7 +99,17 @@ function getColor(num) {
 	}
 }
 
+function redraw() {
+	for (let index = 0; index < 10; index++) {
+		setTimeout(drawCanvas(puz), 1000);
+		puz.position[0] += 1;
+		console.log("UwU");
+	}
+}
+
 function drawCanvas(puzzle) {
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, 500, 800);
 	for (let row = 0; row < puzzle.shape.length; row++) {
 		for (let col = 0; col < puzzle.shape[0].length; col++) {
 			ctx.fillStyle = getColor(puzzle.shape[row][col]);
@@ -104,4 +121,16 @@ function drawCanvas(puzzle) {
 			);
 		}
 	}
+}
+
+function startGameLoop() {
+	intervalId = setInterval(function () {
+		puz.position[0] += 1;
+		drawCanvas(puz);
+		console.log("UwU");
+	}, 1000);
+}
+
+function stopGameLoop() {
+	clearInterval(intervalId);
 }
