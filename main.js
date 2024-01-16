@@ -4,6 +4,26 @@ import { Puzzle, puzzleTypes } from "./puzzle.js";
 const changeTypeButton = document.getElementById("test_change_type");
 const flipLeftButton = document.getElementById("test_flip_left");
 const flipRightButton = document.getElementById("test_flip_right");
+const moveLeftButton = document.getElementById("test_move_left");
+const moveRightButton = document.getElementById("test_move_right");
+
+moveLeftButton.addEventListener("click", function (e) {
+	puz.position[1] -= 1;
+	if (puz.position[1] < 0) puz.position[1] = 0;
+
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, 500, 800);
+	drawCanvas(puz);
+});
+
+moveRightButton.addEventListener("click", function (e) {
+	puz.position[1] += 1;
+	if (puz.position[1] > board.width - puz.shape[0].length)
+		puz.position[1] = board.width - puz.shape[0].length;
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, 500, 800);
+	drawCanvas(puz);
+});
 
 changeTypeButton.addEventListener("click", function (e) {
 	_currentItem++;
@@ -77,8 +97,8 @@ function drawCanvas(puzzle) {
 		for (let col = 0; col < puzzle.shape[0].length; col++) {
 			ctx.fillStyle = getColor(puzzle.shape[row][col]);
 			ctx.fillRect(
-				(col + 1) * board.canvas_square_size,
-				(row + 1) * board.canvas_square_size,
+				(col + puzzle.position[1]) * board.canvas_square_size,
+				(row + puzzle.position[0]) * board.canvas_square_size,
 				board.canvas_square_size,
 				board.canvas_square_size
 			);

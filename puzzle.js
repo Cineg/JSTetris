@@ -6,7 +6,7 @@ export class Puzzle {
 		this.type = type;
 		this.color = Math.floor(Math.random() * 6) + 1; //<- 7 puzzle types = 7 colors? Maybe will change to diversify
 		this.shape = this.createShape();
-		this.position = [];
+		this.position = [0, 3];
 		this.isActive = true;
 	}
 
