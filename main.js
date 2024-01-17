@@ -4,8 +4,35 @@ import { Puzzle, puzzleTypes } from "./puzzle.js";
 const changeTypeButton = document.getElementById("test_change_type");
 const flipLeftButton = document.getElementById("test_flip_left");
 const flipRightButton = document.getElementById("test_flip_right");
-const moveLeftButton = document.getElementById("test_move_left");
-const moveRightButton = document.getElementById("test_move_right");
+
+window.addEventListener("keydown", function (e) {
+	switch (e.key) {
+		case "ArrowDown":
+			if (timeInterval === 200) return;
+
+			stopGameLoop();
+			timeInterval = 200;
+			startGameLoop();
+			return;
+		case "ArrowRight":
+			movePuzzle(-1);
+			return;
+		case "ArrowLeft":
+			movePuzzle(1);
+			return;
+	}
+});
+
+window.addEventListener("keyup", function (e) {
+	switch (e.key) {
+		case "ArrowDown":
+			if (timeInterval === 500) return;
+			stopGameLoop();
+			timeInterval = 500;
+			startGameLoop();
+			return;
+	}
+});
 
 document
 	.getElementById("startGameLoop")
@@ -13,24 +40,7 @@ document
 document.getElementById("stopGameLoop").addEventListener("click", stopGameLoop);
 
 let intervalId;
-
-moveLeftButton.addEventListener("click", function (e) {
-	puz.position[1] -= 1;
-	if (puz.position[1] < 0) puz.position[1] = 0;
-
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, 500, 800);
-	drawCanvas(puz);
-});
-
-moveRightButton.addEventListener("click", function (e) {
-	puz.position[1] += 1;
-	if (puz.position[1] > board.width - puz.shape[0].length)
-		puz.position[1] = board.width - puz.shape[0].length;
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, 500, 800);
-	drawCanvas(puz);
-});
+let timeInterval = 500;
 
 changeTypeButton.addEventListener("click", function (e) {
 	_currentItem++;
@@ -128,9 +138,18 @@ function startGameLoop() {
 		puz.position[0] += 1;
 		drawCanvas(puz);
 		console.log("UwU");
-	}, 1000);
+	}, timeInterval);
 }
 
 function stopGameLoop() {
 	clearInterval(intervalId);
+}
+
+function movePuzzle(dir) {
+	puz.position[1] -= dir;
+	if (puz.position[1] < 0) puz.position[1] = 0;
+	if (puz.position[1] > board.width - puz.shape[0].length)
+		puz.position[1] = board.width - puz.shape[0].length;
+
+	drawCanvas(puz);
 }
