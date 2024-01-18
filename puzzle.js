@@ -81,4 +81,14 @@ export class Puzzle {
 				return arr;
 		}
 	}
+
+	get_coordinates() {
+		const start_row = this.position[0];
+		const end_row = start_row + this.shape[0].length;
+
+		const start_col = this.position[1];
+		const end_col = start_col + this.shape.length;
+
+		return [start_row, end_row, start_col, end_col];
+	}
 }
