@@ -83,12 +83,21 @@ export class Puzzle {
 	}
 
 	get_coordinates() {
-		const start_row = this.position[0];
-		const end_row = start_row + this.shape[0].length;
+		let position = [];
 
-		const start_col = this.position[1];
-		const end_col = start_col + this.shape.length;
+		for (let row = 0; row < this.shape.length; row++) {
+			let row_pos = [];
+			for (let col = 0; col < this.shape[0].length; col++) {
+				const item = [row + this.position[0], col + this.position[1]];
 
-		return [start_row, end_row, start_col, end_col];
+				if (this.shape[row][col] == 0) {
+					row_pos.push(0);
+				} else {
+					row_pos.push(item);
+				}
+			}
+			position.push(row_pos);
+		}
+		return position;
 	}
 }

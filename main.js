@@ -41,7 +41,7 @@ document.getElementById("stopGameLoop").addEventListener("click", stopGameLoop);
 
 let intervalId;
 let timeInterval = 500;
-let puz_queue = [new Puzzle(Math.floor(Math.random(Math.random() * 6)) + 1)];
+let puz_queue = [new Puzzle(Math.floor(Math.random() * 6) + 1)];
 
 changeTypeButton.addEventListener("click", function (e) {
 	_currentItem++;
@@ -78,7 +78,7 @@ const ctx = canvas.getContext("2d");
 let board = new Board(15, 30, canvas.offsetWidth);
 console.log(board);
 
-let puz = new Puzzle(4);
+let puz = new Puzzle(Math.floor(Math.random() * 6) + 1);
 
 ctx.fillStyle = "black";
 ctx.fillRect(0, 0, 500, 800);
@@ -88,7 +88,7 @@ drawCanvas(puz);
 function getColor(num) {
 	switch (num) {
 		case 0:
-			return "black";
+			return "rgba(0, 0, 0, 0)";
 		case 1:
 			return "white";
 		case 2:
@@ -116,9 +116,6 @@ function drawCanvas(puzzle) {
 	for (let row = 0; row < board.height; row++) {
 		for (let col = 0; col < board.width; col++) {
 			ctx.fillStyle = getColor(board.board[row][col]);
-			if (board.board[row][col] != 0) {
-				console.log(row, col);
-			}
 			ctx.fillRect(
 				col * board.canvas_square_size,
 				row * board.canvas_square_size,
@@ -144,12 +141,10 @@ function drawCanvas(puzzle) {
 function startGameLoop() {
 	intervalId = setInterval(function () {
 		puz.position[0] += 1;
-		if (is_puzzle_to_stay()) {
+		if (!is_puzzle_to_stay()) {
 			update_board();
 			puz = puz_queue.pop();
-			puz_queue.push(
-				new Puzzle(Math.floor(Math.random(Math.random() * 6) + 1))
-			);
+			puz_queue.push(new Puzzle(Math.floor(Math.random() * 6) + 1));
 		}
 
 		drawCanvas(puz);
@@ -171,30 +166,35 @@ function movePuzzle(dir) {
 
 function is_puzzle_to_stay() {
 	let puzzle_position = puz.get_coordinates();
-	for (let row = puzzle_position[0]; row < puzzle_position[1]; row++) {
-		for (let col = puzzle_position[2]; col < puzzle_position[3]; col++) {
-			let shape_row = row - puzzle_position[1] + puz.shape.length;
-			let shape_col = col - puzzle_position[3] + puz.shape[0].length;
+	console.log(puzzle_position);
+	for (let row = 0; row < puzzle_position.length; row++) {
+		for (let col = 0; col < puzzle_position[row].length; col++) {
+			const element = puzzle_position[row][col];
+			if (element == 0) {
+				continue;
+			}
 
-			if (shape_row != 0) {
-				if (row + 1 == board.height) {
-					return true;
-				}
+			if (element[0] == board.height - 1) {
+				return false;
+			}
+
+			if (board.board[element[0] + 1][element[1]] != 0) {
+				return false;
 			}
 		}
 	}
+	return true;
 }
 
 function update_board() {
 	let puzzle_position = puz.get_coordinates();
-	for (let row = puzzle_position[0]; row < puzzle_position[1]; row++) {
-		for (let col = puzzle_position[2]; col < puzzle_position[3]; col++) {
-			let shape_row = row - puzzle_position[1] + puz.shape.length;
-			let shape_col = col - puzzle_position[3] + puz.shape[0].length;
-
-			if (puz.shape[shape_row][shape_col] != 0) {
-				board.board[row][col] = puz.shape[shape_row][shape_col];
+	for (let row = 0; row < puzzle_position.length; row++) {
+		for (let col = 0; col < puzzle_position[row].length; col++) {
+			const element = puzzle_position[row][col];
+			if (element == 0) {
+				continue;
 			}
+			board.board[element[0]][[element[1]]] = puz.shape[row][col];
 		}
 	}
 }
