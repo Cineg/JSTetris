@@ -1,17 +1,16 @@
 import { Board } from "./board.js";
-import { Puzzle, puzzleTypes } from "./puzzle.js";
+import { Puzzle } from "./puzzle.js";
 
-const changeTypeButton = document.getElementById("test_change_type");
 const flipLeftButton = document.getElementById("test_flip_left");
 const flipRightButton = document.getElementById("test_flip_right");
 
 window.addEventListener("keydown", function (e) {
 	switch (e.key) {
 		case "ArrowDown":
-			if (timeInterval === 200) return;
+			if (timeInterval === 75) return;
 
 			stopGameLoop();
-			timeInterval = 200;
+			timeInterval = 75;
 			startGameLoop();
 			return;
 		case "ArrowRight":
@@ -20,15 +19,18 @@ window.addEventListener("keydown", function (e) {
 		case "ArrowLeft":
 			movePuzzle(1);
 			return;
+		case "ArrowUp":
+			puz.flipLeft();
+			return;
 	}
 });
 
 window.addEventListener("keyup", function (e) {
 	switch (e.key) {
 		case "ArrowDown":
-			if (timeInterval === 500) return;
+			if (timeInterval === 400) return;
 			stopGameLoop();
-			timeInterval = 500;
+			timeInterval = 400;
 			startGameLoop();
 			return;
 	}
@@ -39,84 +41,64 @@ document
 	.addEventListener("click", startGameLoop);
 document.getElementById("stopGameLoop").addEventListener("click", stopGameLoop);
 
-let intervalId;
-let timeInterval = 500;
-let puz_queue = [new Puzzle(Math.floor(Math.random() * 6) + 1)];
-
-changeTypeButton.addEventListener("click", function (e) {
-	_currentItem++;
-	if (_currentItem > 7) _currentItem = 1;
-
-	puz = new Puzzle(_currentItem);
-
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, 500, 800);
-	drawCanvas(puz);
-});
-
 flipLeftButton.addEventListener("click", function (e) {
 	puz.flipLeft();
-
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, 500, 800);
 	drawCanvas(puz);
 });
 
 flipRightButton.addEventListener("click", function (e) {
 	puz.flipRight();
-
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, 500, 800);
 	drawCanvas(puz);
 });
 
-let _currentItem = 1;
-
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const mini_canvas = document.getElementById("next-puzzle");
+const mini_ctx = mini_canvas.getContext("2d");
+
+let intervalId;
+let timeInterval = 400;
+let puz_queue = [new Puzzle(Math.floor(Math.random() * 6) + 1)];
 
 let board = new Board(15, 30, canvas.offsetWidth);
-console.log(board);
+let mini_board = new Board(4, 4, mini_canvas.offsetWidth);
 
 let puz = new Puzzle(Math.floor(Math.random() * 6) + 1);
 
-ctx.fillStyle = "black";
-ctx.fillRect(0, 0, 500, 800);
-
-drawCanvas(puz);
+drawCanvas(ctx, board, puz);
+drawCanvas(mini_ctx, mini_board, puz_queue[0]);
 
 function getColor(num) {
 	switch (num) {
 		case 0:
 			return "rgba(0, 0, 0, 0)";
 		case 1:
-			return "white";
+			return "#ff3215";
 		case 2:
-			return "yellow";
+			return "#63145b";
 		case 3:
-			return "red";
+			return "#f23553";
 		case 4:
-			return "blue";
+			return "#569fb1";
 		case 5:
-			return "green";
+			return "#00a08c";
 		case 6:
-			return "pink";
+			return "#eed988";
 		case 7:
-			return "grey";
+			return "#b8b6b9";
 
 		default:
 			return "white";
 	}
 }
 
-function drawCanvas(puzzle) {
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, 500, 800);
+function drawCanvas(canvas_context, board, puzzle) {
+	draw_blank_board(canvas_context, board);
 
 	for (let row = 0; row < board.height; row++) {
 		for (let col = 0; col < board.width; col++) {
-			ctx.fillStyle = getColor(board.board[row][col]);
-			ctx.fillRect(
+			canvas_context.fillStyle = getColor(board.board[row][col]);
+			canvas_context.fillRect(
 				col * board.canvas_square_size,
 				row * board.canvas_square_size,
 				board.canvas_square_size,
@@ -127,8 +109,8 @@ function drawCanvas(puzzle) {
 
 	for (let row = 0; row < puzzle.shape.length; row++) {
 		for (let col = 0; col < puzzle.shape[0].length; col++) {
-			ctx.fillStyle = getColor(puzzle.shape[row][col]);
-			ctx.fillRect(
+			canvas_context.fillStyle = getColor(puzzle.shape[row][col]);
+			canvas_context.fillRect(
 				(col + puzzle.position[1]) * board.canvas_square_size,
 				(row + puzzle.position[0]) * board.canvas_square_size,
 				board.canvas_square_size,
@@ -142,12 +124,13 @@ function startGameLoop() {
 	intervalId = setInterval(function () {
 		puz.position[0] += 1;
 		if (!is_puzzle_to_stay()) {
-			update_board();
+			update_board(board);
 			puz = puz_queue.pop();
 			puz_queue.push(new Puzzle(Math.floor(Math.random() * 6) + 1));
 		}
 
-		drawCanvas(puz);
+		drawCanvas(ctx, board, puz);
+		drawCanvas(mini_ctx, mini_board, puz_queue[0]);
 	}, timeInterval);
 }
 
@@ -161,7 +144,7 @@ function movePuzzle(dir) {
 	if (puz.position[1] > board.width - puz.shape[0].length)
 		puz.position[1] = board.width - puz.shape[0].length;
 
-	drawCanvas(puz);
+	drawCanvas(ctx, board, puz);
 }
 
 function is_puzzle_to_stay() {
@@ -186,7 +169,7 @@ function is_puzzle_to_stay() {
 	return true;
 }
 
-function update_board() {
+function update_board(board) {
 	let puzzle_position = puz.get_coordinates();
 	for (let row = 0; row < puzzle_position.length; row++) {
 		for (let col = 0; col < puzzle_position[row].length; col++) {
@@ -197,4 +180,14 @@ function update_board() {
 			board.board[element[0]][[element[1]]] = puz.shape[row][col];
 		}
 	}
+}
+
+function draw_blank_board(canvas_context, board) {
+	canvas_context.fillStyle = "black";
+	canvas_context.fillRect(
+		0,
+		0,
+		board.width * board.canvas_square_size,
+		board.height * board.canvas_square_size
+	);
 }

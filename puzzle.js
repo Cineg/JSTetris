@@ -2,11 +2,11 @@ export const puzzleTypes = [1, 2, 3, 4, 5, 6, 7];
 
 export class Puzzle {
 	// 7 types
-	constructor(type) {
+	constructor(type, position = [0, 0]) {
 		this.type = type;
 		this.color = Math.floor(Math.random() * 6) + 1; //<- 7 puzzle types = 7 colors? Maybe will change to diversify
 		this.shape = this.createShape();
-		this.position = [0, 3];
+		this.position = position;
 		this.isActive = true;
 	}
 
@@ -42,42 +42,42 @@ export class Puzzle {
 		let arr = [];
 		switch (this.type) {
 			case 1:
-				arr.push([this.color]);
-				arr.push([this.color]);
-				arr.push([this.color]);
-				arr.push([this.color]);
+				arr.push([this.type]);
+				arr.push([this.type]);
+				arr.push([this.type]);
+				arr.push([this.type]);
 				return arr;
 
 			case 2:
-				arr.push([0, this.color]);
-				arr.push([0, this.color]);
-				arr.push([this.color, this.color]);
+				arr.push([0, this.type]);
+				arr.push([0, this.type]);
+				arr.push([this.type, this.type]);
 				return arr;
 
 			case 3:
-				arr.push([this.color, 0]);
-				arr.push([this.color, 0]);
-				arr.push([this.color, this.color]);
+				arr.push([this.type, 0]);
+				arr.push([this.type, 0]);
+				arr.push([this.type, this.type]);
 				return arr;
 
 			case 4:
-				arr.push([this.color, this.color]);
-				arr.push([this.color, this.color]);
+				arr.push([this.type, this.type]);
+				arr.push([this.type, this.type]);
 				return arr;
 
 			case 5:
-				arr.push([0, this.color, this.color]);
-				arr.push([this.color, this.color, 0]);
+				arr.push([0, this.type, this.type]);
+				arr.push([this.type, this.type, 0]);
 				return arr;
 
 			case 6:
-				arr.push([this.color, this.color, this.color]);
-				arr.push([0, this.color, 0]);
+				arr.push([this.type, this.type, this.type]);
+				arr.push([0, this.type, 0]);
 				return arr;
 
 			case 7:
-				arr.push([this.color, this.color, 0]);
-				arr.push([0, this.color, this.color]);
+				arr.push([this.type, this.type, 0]);
+				arr.push([0, this.type, this.type]);
 				return arr;
 		}
 	}
