@@ -1,9 +1,6 @@
 import { Board } from "./board.js";
 import { Puzzle } from "./puzzle.js";
 
-const flipLeftButton = document.getElementById("test_flip_left");
-const flipRightButton = document.getElementById("test_flip_right");
-
 window.addEventListener("keydown", function (e) {
 	switch (e.key) {
 		case "ArrowDown":
@@ -20,7 +17,9 @@ window.addEventListener("keydown", function (e) {
 			movePuzzle(1);
 			return;
 		case "ArrowUp":
-			puz.flipLeft();
+			if (can_flip("left")) {
+				puz.flipLeft();
+			}
 			return;
 	}
 });
@@ -41,16 +40,6 @@ document
 	.addEventListener("click", startGameLoop);
 document.getElementById("stopGameLoop").addEventListener("click", stopGameLoop);
 
-flipLeftButton.addEventListener("click", function (e) {
-	puz.flipLeft();
-	drawCanvas(puz);
-});
-
-flipRightButton.addEventListener("click", function (e) {
-	puz.flipRight();
-	drawCanvas(puz);
-});
-
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const mini_canvas = document.getElementById("next-puzzle");
@@ -58,12 +47,11 @@ const mini_ctx = mini_canvas.getContext("2d");
 
 let intervalId;
 let timeInterval = 400;
-let puz_queue = [new Puzzle(Math.floor(Math.random() * 6) + 1)];
+let board = new Board(15, 30, canvas.offsetWidth, false);
+let mini_board = new Board(4, 4, mini_canvas.offsetWidth, true);
 
-let board = new Board(15, 30, canvas.offsetWidth);
-let mini_board = new Board(4, 4, mini_canvas.offsetWidth);
-
-let puz = new Puzzle(Math.floor(Math.random() * 6) + 1);
+let puz = get_new_puzzle();
+let puz_queue = [get_new_puzzle()];
 
 drawCanvas(ctx, board, puz);
 drawCanvas(mini_ctx, mini_board, puz_queue[0]);
@@ -107,12 +95,18 @@ function drawCanvas(canvas_context, board, puzzle) {
 		}
 	}
 
+	let position;
+	if (board.is_mini) {
+		position = puz.mini_position;
+	} else {
+		position = puz.position;
+	}
 	for (let row = 0; row < puzzle.shape.length; row++) {
 		for (let col = 0; col < puzzle.shape[0].length; col++) {
 			canvas_context.fillStyle = getColor(puzzle.shape[row][col]);
 			canvas_context.fillRect(
-				(col + puzzle.position[1]) * board.canvas_square_size,
-				(row + puzzle.position[0]) * board.canvas_square_size,
+				(col + position[1]) * board.canvas_square_size,
+				(row + position[0]) * board.canvas_square_size,
 				board.canvas_square_size,
 				board.canvas_square_size
 			);
@@ -139,10 +133,15 @@ function stopGameLoop() {
 }
 
 function movePuzzle(dir) {
-	puz.position[1] -= dir;
-	if (puz.position[1] < 0) puz.position[1] = 0;
-	if (puz.position[1] > board.width - puz.shape[0].length)
-		puz.position[1] = board.width - puz.shape[0].length;
+	let new_position = puz.position[1] - dir;
+	if (new_position < 0) new_position = 0;
+	if (new_position > board.width - puz.shape[0].length)
+		new_position = board.width - puz.shape[0].length;
+
+	// check for other puzzles
+	if (can_move(new_position)) {
+		puz.position[1] = new_position;
+	}
 
 	drawCanvas(ctx, board, puz);
 }
@@ -169,6 +168,50 @@ function is_puzzle_to_stay() {
 	return true;
 }
 
+function can_move(new_col) {
+	for (let row = 0; row < puz.shape.length; row++) {
+		for (let col = 0; col < puz.shape[0].length; col++) {
+			const element = puz.shape[row][col];
+			if (element == 0) {
+				continue;
+			}
+			const board_value =
+				board.board[row + puz.position[0]][col + new_col];
+			if (board_value != 0) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+function can_flip(direction) {
+	let shape = puz.shape;
+
+	if (direction == "left") {
+		puz.flipLeft();
+	}
+
+	if (direction == "right") {
+		puz.flipRight();
+	}
+
+	for (let row = 0; row < puz.shape.length; row++) {
+		for (let col = 0; col < puz.shape[row].length; col++) {
+			const element = puz.shape[row][col];
+			if (
+				element != 0 &&
+				board.board[puz.position[0] + row][puz.position[1] + col] != 0
+			) {
+				puz.shape = shape;
+				return false;
+			}
+		}
+	}
+	puz.shape = shape;
+	return true;
+}
+
 function update_board(board) {
 	let puzzle_position = puz.get_coordinates();
 	for (let row = 0; row < puzzle_position.length; row++) {
@@ -190,4 +233,13 @@ function draw_blank_board(canvas_context, board) {
 		board.width * board.canvas_square_size,
 		board.height * board.canvas_square_size
 	);
+}
+
+function get_new_puzzle() {
+	let new_puzzle = new Puzzle(Math.floor(Math.random() * 6) + 1);
+	let width = board.get_center(new_puzzle.shape.length);
+	let mini_width = mini_board.get_center(new_puzzle.shape.length);
+	new_puzzle.position = [0, width];
+	new_puzzle.mini_position = [0, mini_width];
+	return new_puzzle;
 }

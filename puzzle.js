@@ -2,11 +2,12 @@ export const puzzleTypes = [1, 2, 3, 4, 5, 6, 7];
 
 export class Puzzle {
 	// 7 types
-	constructor(type, position = [0, 0]) {
+	constructor(type) {
 		this.type = type;
 		this.color = Math.floor(Math.random() * 6) + 1; //<- 7 puzzle types = 7 colors? Maybe will change to diversify
 		this.shape = this.createShape();
-		this.position = position;
+		this.position = [0, 0];
+		this.mini_position = [0, 0];
 		this.isActive = true;
 	}
 
