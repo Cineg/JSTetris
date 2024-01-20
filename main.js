@@ -35,10 +35,23 @@ window.addEventListener("keyup", function (e) {
 	}
 });
 
-document
-	.getElementById("startGameLoop")
-	.addEventListener("click", startGameLoop);
-document.getElementById("stopGameLoop").addEventListener("click", stopGameLoop);
+function startGameLoop() {
+	intervalId = setInterval(function () {
+		puz.position[0] += 1;
+		if (!is_puzzle_to_stay()) {
+			update_board(board);
+			puz = puz_queue.pop();
+			puz_queue.push(getNewPuzzle());
+		}
+
+		drawCanvas(ctx, board, puz);
+		drawCanvas(mini_ctx, mini_board, puz_queue[0]);
+	}, timeInterval);
+}
+
+function stopGameLoop() {
+	clearInterval(intervalId);
+}
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -50,8 +63,8 @@ let timeInterval = 400;
 let board = new Board(15, 30, canvas.offsetWidth, false);
 let mini_board = new Board(4, 4, mini_canvas.offsetWidth, true);
 
-let puz = get_new_puzzle();
-let puz_queue = [get_new_puzzle()];
+let puz = getNewPuzzle();
+let puz_queue = [getNewPuzzle()];
 
 drawCanvas(ctx, board, puz);
 drawCanvas(mini_ctx, mini_board, puz_queue[0]);
@@ -112,24 +125,6 @@ function drawCanvas(canvas_context, board, puzzle) {
 			);
 		}
 	}
-}
-
-function startGameLoop() {
-	intervalId = setInterval(function () {
-		puz.position[0] += 1;
-		if (!is_puzzle_to_stay()) {
-			update_board(board);
-			puz = puz_queue.pop();
-			puz_queue.push(new Puzzle(Math.floor(Math.random() * 6) + 1));
-		}
-
-		drawCanvas(ctx, board, puz);
-		drawCanvas(mini_ctx, mini_board, puz_queue[0]);
-	}, timeInterval);
-}
-
-function stopGameLoop() {
-	clearInterval(intervalId);
 }
 
 function movePuzzle(dir) {
@@ -235,7 +230,7 @@ function draw_blank_board(canvas_context, board) {
 	);
 }
 
-function get_new_puzzle() {
+function getNewPuzzle() {
 	let new_puzzle = new Puzzle(Math.floor(Math.random() * 6) + 1);
 	let width = board.get_center(new_puzzle.shape.length);
 	let mini_width = mini_board.get_center(new_puzzle.shape.length);

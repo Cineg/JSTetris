@@ -1,0 +1,50 @@
+canvas {
+	border: 1px solid white;
+}
+
+h1 {
+	margin: 10px 0;
+}
+
+.instructions {
+	margin: 10px 0;
+	padding: 20px;
+	background-color: lightgray;
+	width: max-content;
+	border-radius: 10px;
+}
+.instructions p {
+	margin: 0;
+	color: darkslategray;
+	font-style: italic;
+}
+
+main {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-content: center;
+	justify-content: flex-start;
+	align-items: flex-start;
+}
+
+main .next_puzzle {
+	margin: 10px 0;
+	padding: 20px;
+	background-color: black;
+	width: max-content;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+}
+
+main .next_puzzle p {
+	margin: 0;
+	color: grey;
+	font-style: italic;
+}
+main .next_puzzle canvas {
+	width: 100px;
+	margin: 5px 0;
+	border: 0;
+}

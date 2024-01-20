@@ -4,15 +4,22 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Tetris</title>
+		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
-		<button id="startGameLoop">Start Game Loop</button>
-		<button id="stopGameLoop">Stop Game Loop</button>
-
-		<br />
+		<h1>Basic Tetris</h1>
+		<div class="instructions">
+			<p>To start the game - press ↓ or s</p>
+			<p>← or a moves puzzle left</p>
+			<p>→ or d moves puzzle right</p>
+			<p>↑ or w flips puzzle left</p>
+		</div>
 		<main>
 			<canvas id="canvas" width="350" height="700"></canvas>
-			<canvas id="next-puzzle" width="50" height="50"></canvas>
+			<div class="next_puzzle">
+				<p>Next puzzle:</p>
+				<canvas id="next-puzzle"></canvas>
+			</div>
 		</main>
 		<script type="module" src="main.js"></script>
 	</body>
