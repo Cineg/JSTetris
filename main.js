@@ -56,19 +56,25 @@ drawCanvas(mini_ctx, mini_board, puz_queue[0]);
 function startGameLoop() {
 	intervalId = setInterval(function () {
 		puz.position[0] += 1;
+
 		if (!is_puzzle_to_stay()) {
 			update_board(board);
-			// check for gameover
 
-			// check for score update
 			score += 100 * board.check_board_score();
-
 			puz = puz_queue.pop();
+
 			puz_queue.push(getNewPuzzle());
 		}
+
 		scoreboard.innerText = score;
 		drawCanvas(ctx, board, puz);
 		drawCanvas(mini_ctx, mini_board, puz_queue[0]);
+
+		if (!is_puzzle_to_stay()) {
+			stopGameLoop();
+			drawGameOver();
+			return;
+		}
 	}, timeInterval);
 }
 
@@ -249,4 +255,13 @@ function getNewPuzzle() {
 	new_puzzle.position = [0, centerWidth];
 	new_puzzle.mini_position = [0, miniWidth];
 	return new_puzzle;
+}
+
+function drawGameOver() {
+	ctx.font = "48px serif";
+	ctx.fillStyle = "white";
+
+	ctx.fillText("Game over!", 50, canvas.offsetHeight / 2 - 20);
+	ctx.fillStyle = "black";
+	ctx.strokeText("Game over!", 50, canvas.offsetHeight / 2 - 20);
 }

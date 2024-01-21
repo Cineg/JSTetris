@@ -20,6 +20,16 @@ export class Board {
 		return arr;
 	}
 
+	check_game_over() {
+		for (let index = 0; index < this.board[0].length; index++) {
+			const element = this.board[0][index];
+			if (element != 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	check_board_score() {
 		let rowsToRemove = [];
 		for (let row = 0; row < this.board.length; row++) {
