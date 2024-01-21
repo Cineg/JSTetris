@@ -1,6 +1,21 @@
 import { Board } from "./board.js";
 import { Puzzle } from "./puzzle.js";
 
+let intervalId;
+let timeInterval = 400;
+let score = 0;
+const scoreboard = document.getElementById("score");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const mini_canvas = document.getElementById("next-puzzle");
+const mini_ctx = mini_canvas.getContext("2d");
+
+let board = new Board(15, 30, canvas.offsetWidth, false);
+let mini_board = new Board(4, 4, mini_canvas.offsetWidth, true);
+
+let puz = getNewPuzzle();
+let puz_queue = [getNewPuzzle()];
+
 window.addEventListener("keydown", function (e) {
 	switch (e.key) {
 		case "ArrowDown":
@@ -35,15 +50,23 @@ window.addEventListener("keyup", function (e) {
 	}
 });
 
+drawCanvas(ctx, board, puz);
+drawCanvas(mini_ctx, mini_board, puz_queue[0]);
+
 function startGameLoop() {
 	intervalId = setInterval(function () {
 		puz.position[0] += 1;
 		if (!is_puzzle_to_stay()) {
 			update_board(board);
+			// check for gameover
+
+			// check for score update
+			score += 100 * board.check_board_score();
+
 			puz = puz_queue.pop();
 			puz_queue.push(getNewPuzzle());
 		}
-
+		scoreboard.innerText = score;
 		drawCanvas(ctx, board, puz);
 		drawCanvas(mini_ctx, mini_board, puz_queue[0]);
 	}, timeInterval);
@@ -52,22 +75,6 @@ function startGameLoop() {
 function stopGameLoop() {
 	clearInterval(intervalId);
 }
-
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const mini_canvas = document.getElementById("next-puzzle");
-const mini_ctx = mini_canvas.getContext("2d");
-
-let intervalId;
-let timeInterval = 400;
-let board = new Board(15, 30, canvas.offsetWidth, false);
-let mini_board = new Board(4, 4, mini_canvas.offsetWidth, true);
-
-let puz = getNewPuzzle();
-let puz_queue = [getNewPuzzle()];
-
-drawCanvas(ctx, board, puz);
-drawCanvas(mini_ctx, mini_board, puz_queue[0]);
 
 function getColor(num) {
 	switch (num) {
@@ -143,7 +150,6 @@ function movePuzzle(dir) {
 
 function is_puzzle_to_stay() {
 	let puzzle_position = puz.get_coordinates();
-	console.log(puzzle_position);
 	for (let row = 0; row < puzzle_position.length; row++) {
 		for (let col = 0; col < puzzle_position[row].length; col++) {
 			const element = puzzle_position[row][col];
@@ -232,9 +238,15 @@ function draw_blank_board(canvas_context, board) {
 
 function getNewPuzzle() {
 	let new_puzzle = new Puzzle(Math.floor(Math.random() * 6) + 1);
-	let width = board.get_center(new_puzzle.shape.length);
-	let mini_width = mini_board.get_center(new_puzzle.shape.length);
-	new_puzzle.position = [0, width];
-	new_puzzle.mini_position = [0, mini_width];
+
+	let centerWidth = Math.floor(
+		(board.width - new_puzzle.shape[0].length) / 2
+	);
+	let miniWidth = Math.floor(
+		(mini_board.width - new_puzzle.shape[0].length) / 2
+	);
+
+	new_puzzle.position = [0, centerWidth];
+	new_puzzle.mini_position = [0, miniWidth];
 	return new_puzzle;
 }

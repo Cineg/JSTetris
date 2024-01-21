@@ -11,7 +11,7 @@ export class Board {
 		let arr = [];
 		for (let row = 0; row < this.height; row++) {
 			let arr_row = [];
-			for (let col = 0; col < this.height; col++) {
+			for (let col = 0; col < this.width; col++) {
 				const element = 0;
 				arr_row.push(element);
 			}
@@ -20,8 +20,28 @@ export class Board {
 		return arr;
 	}
 
-	get_center(puzzle_width) {
-		let offset = Math.floor(puzzle_width / 2);
-		return Math.floor(this.width / 2 - offset);
+	check_board_score() {
+		let rowsToRemove = [];
+		for (let row = 0; row < this.board.length; row++) {
+			let flag = true;
+			for (let col = 0; col < this.board[row].length; col++) {
+				const item = this.board[row][col];
+				if (item == 0) {
+					flag = false;
+					break;
+				}
+			}
+			if (flag) {
+				rowsToRemove.push(row);
+			}
+		}
+
+		let last_row = Math.max(...rowsToRemove);
+		while (last_row > 0) {
+			this.board[last_row] = this.board[last_row - 1];
+			last_row -= 1;
+		}
+
+		return rowsToRemove.length;
 	}
 }

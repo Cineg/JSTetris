@@ -8,17 +8,23 @@
 	</head>
 	<body>
 		<h1>Basic Tetris</h1>
-		<div class="instructions">
-			<p>To start the game - press ↓ or s</p>
-			<p>← or a moves puzzle left</p>
-			<p>→ or d moves puzzle right</p>
-			<p>↑ or w flips puzzle left</p>
-		</div>
 		<main>
 			<canvas id="canvas" width="350" height="700"></canvas>
-			<div class="next_puzzle">
-				<p>Next puzzle:</p>
-				<canvas id="next-puzzle"></canvas>
+			<div class="info">
+				<div class="next_puzzle">
+					<p>Next puzzle:</p>
+					<canvas id="next-puzzle"></canvas>
+				</div>
+				<div class="instructions">
+					<p>To start the game - press ↓ or s</p>
+					<p>← or a moves puzzle left</p>
+					<p>→ or d moves puzzle right</p>
+					<p>↑ or w flips puzzle left</p>
+				</div>
+				<div class="score">
+					<p>Current score:</p>
+					<p id="score">0</p>
+				</div>
 			</div>
 		</main>
 		<script type="module" src="main.js"></script>
